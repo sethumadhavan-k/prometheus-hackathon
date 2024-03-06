@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+
+  cadvisor:
+    privileged: true
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: monitoring.cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    restart: unless-stopped
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - app
+    labels:
+      org.label-schema.group: "monitoring"
+      name: "cadvisor"
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    networks:
+      - app
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - app
+  
+  webserver1:
+    image: nginx:latest
+    ports:
+      - "8072:80"
+    restart: unless-stopped
+    networks:
+      - app
+  
+  webserver2:
+    image: nginx:latest
+    ports:
+      - "8073:80"
+    restart: unless-stopped
+    networks:
+      - app
+  
+  webserver3:
+    image: nginx:latest
+    ports:
+      - "8074:80"
+    restart: unless-stopped
+    networks:
+      - app
+  
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro,rslave
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    networks:
+      - app
+      
+networks:
+  app:
+    name: app
+

@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+  external_labels:
+    monitor: "codelab-monitor"
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: docker
+    static_configs:
+      - targets: ["webserver1:8072","webserver2:8073","webserver3:8074"]
+  
+  - job_name: cadvisor
+    scrape_interval: 5s
+    static_configs:
+    - targets: ["cadvisor:8080"]
+  
+  - job_name: node
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["node_exporter:9100"]
