@@ -6,7 +6,7 @@
 
 follow the below steps to set up hackathon environment
 
-  - clone this repo and run `docker compose up` from the project folder
+  - clone this repo and run `docker-compose up` from the project folder
   - check the following endpoints are accessible 
      - http://localhost:9090/metrics
      - http://localhost:9100/metrics
